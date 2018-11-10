@@ -25,28 +25,29 @@ $(document).ready(function () {
         });
     }
 
+    // very bad to calculate new stock on frontend, need to update to calc on backend lataer
     const buy = function() {
+        $(".message").empty();
         const name = $(this).attr("name"); 
         const idd = $(this).attr("idd"); 
         const quantity = $(this).attr("quantity");
         const purchase = $("." + name + "input").val();
         const v = quantity - purchase;
-        if (purchase) {
+        if (purchase && v >= 0 && quantity !== 0) {
             $.ajax({
-                url: '/api/product/${idd}',
-                type: 'PUT',
-                Data: {
+                url: `/api/product/${idd}`,
+                type: 'put',
+                data: {
                     quantity: v
                 }
-            }).done(function() {
-                console.log("success");
-            });;
+            }).then(function() {
+                $(".message").html(`<div class="alert alert-primary" role="alert">Purchase Successful!</div>`);
+                $("#display").empty();
+            });
         } else {
-            //<div class="alert alert-primary" role="alert">Insufficient Quantity!</div>
+            $(".message").append(`<div class="alert alert-primary" role="alert">Insufficient Quantity!</div>`);
         }
     }
-
-//<div class="alert alert-primary" role="alert">Purchase Successful!</div>
 
     $("#show-all").click(showAll);
     $("#display").on("click", ".btn", buy);
